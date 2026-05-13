@@ -411,10 +411,9 @@ app.get("/api/session", (req, res) => {
 })
 
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie("inventario.sid", { path: "/" })
-    res.json({ ok: true })
-  })
+  req.session = null
+  res.clearCookie("inventario.sid", { path: "/" })
+  res.json({ ok: true })
 })
 
 // ============================
