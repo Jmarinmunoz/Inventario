@@ -46,19 +46,6 @@ inventario-ti/
     └── logosinfondo.png
 ```
 
-## Instalación local
-
-```bash
-# Clonar el repositorio
-git clone https://github.com/Jmarinmunoz/Inventario.git
-cd Inventario/inventario-ti
-
-# Instalar dependencias
-npm install
-
-# Iniciar el servidor
-npm start
-```
 
 El servidor quedará disponible en `http://localhost:3001`.
 
@@ -81,4 +68,7 @@ Notebooks, Escritorio, Impresora, Switch, Router, Antena, Repetidores.
 
 ## Autor
 
-**Joaquin Marin** — [github.com/Jmarinmunoz](https://github.com/Jmarinmunoz)
+**Joaquín Marín Muñoz** — Ingeniero en Informática · Fullstack Developer
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-joaquin--marin--munoz-blue?logo=linkedin)](https://www.linkedin.com/in/joaquin-marin-munoz/)
+[![GitHub](https://img.shields.io/badge/GitHub-Jmarinmunoz-black?logo=github)](https://github.com/Jmarinmunoz)
