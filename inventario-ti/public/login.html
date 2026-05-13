@@ -114,6 +114,45 @@
       text-align: center;
       width: 100%;
     }
+    .demo-creds {
+      margin-top: 22px;
+      width: 100%;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 16px;
+    }
+    .demo-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #9ca3af;
+      letter-spacing: 0.05em;
+      margin: 0 0 10px;
+      text-align: center;
+    }
+    .demo-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .demo-row:hover { background: #eff6ff; border-color: #bfdbfe; }
+    .demo-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .demo-badge.super { background: #dbeafe; color: #1d4ed8; }
+    .demo-badge.user  { background: #dcfce7; color: #15803d; }
+    .demo-info { font-size: 13px; color: #374151; flex: 1; }
+    .demo-hint { font-size: 11px; color: #9ca3af; white-space: nowrap; }
   </style>
 </head>
 
@@ -147,10 +186,29 @@
       <button type="submit">Iniciar sesión</button>
     </form>
     <p id="msg" role="alert"></p>
+
+    <div class="demo-creds">
+      <p class="demo-title">Credenciales de demo</p>
+      <div class="demo-row" onclick="fillCreds('admin','admin123')">
+        <span class="demo-badge super">SuperAdmin</span>
+        <span class="demo-info"><b>admin</b> / admin123</span>
+        <span class="demo-hint">clic para completar</span>
+      </div>
+      <div class="demo-row" onclick="fillCreds('demo','demo123')">
+        <span class="demo-badge user">Usuario</span>
+        <span class="demo-info"><b>demo</b> / demo123</span>
+        <span class="demo-hint">clic para completar</span>
+      </div>
+    </div>
   </div>
 
   <script>
-    (function () {
+    function fillCreds(user, pass) {
+      document.getElementById("nombre").value = user
+      document.getElementById("password").value = pass
+    }
+
+    ;(function () {
       var form = document.getElementById("loginForm")
       var msg = document.getElementById("msg")
       var passInput = document.getElementById("password")
