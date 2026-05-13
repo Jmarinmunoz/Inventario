@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Inventario TI</title>
+<link rel="icon" type="image/jpeg" href="/icono.jpg">
+
+<style>
+
+:root{
+--campo-alto: 46px;
+--campo-padding: 12px 14px;
+--campo-font: 14px;
+--campo-radio: 6px;
+--campo-borde: 1px solid #ccc;
+}
+
+body{
+font-family: 'Segoe UI', sans-serif;
+background: #f4f6f9;
+margin: 0;
+}
+
+/* HEADER MEJORADO */
+.header{
+display:flex;
+align-items:center;
+gap:15px;
+background: linear-gradient(135deg,#0B47BF,#0B47BF);
+color:white;
+padding:15px 30px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+position: relative;
+}
+
+/* LOGO */
+.logo{
+height:60px;
+object-fit:contain;
+}
+
+/* TITULO */
+.titulo{
+font-size:20px;
+font-weight:bold;
+position: absolute;
+left: 50%;
+transform: translateX(-50%);
+text-align: center;
+white-space: nowrap;
+}
+
+.header-right{
+margin-left: auto;
+display: flex;
+align-items: center;
+gap: 14px;
+font-size: 14px;
+}
+
+.header-user{
+opacity: 0.95;
+max-width: 280px;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+
+.btn-logout{
+background: rgba(255,255,255,0.2);
+color: #fff;
+border: 1px solid rgba(255,255,255,0.5);
+padding: 8px 14px;
+border-radius: 6px;
+cursor: pointer;
+font-size: 14px;
+font-family: inherit;
+margin: 0;
+}
+
+.btn-logout:hover{
+background: rgba(255,255,255,0.3);
+}
+
+/* CONTENEDOR */
+.container{
+padding: 30px;
+}
+
+/* GRID */
+.grid{
+display: grid;
+grid-template-columns: 1fr;
+gap: 25px;
+}
+
+/* Barra superior (form) en 2 filas como el ejemplo */
+#equipoForm{
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+grid-template-areas:
+  "tipo modelo usuario licencias anio_compra"
+  "marca departamento estado sistema_so acciones"
+  "motivo motivo motivo motivo motivo"
+  "msg msg msg msg msg";
+gap: 12px 18px;
+align-items: end;
+}
+
+.field{
+display: flex;
+flex-direction: column;
+min-width: 0;
+gap: 6px;
+}
+
+.field-tipo{grid-area: tipo;}
+.field-modelo{grid-area: modelo;}
+.field-usuario{grid-area: usuario;}
+.field-licencias{grid-area: licencias;}
+.field-marca{grid-area: marca;}
+.field-departamento{grid-area: departamento;}
+.field-estado{grid-area: estado;}
+.field-anio-compra{grid-area: anio_compra;}
+.field-sistema-so{grid-area: sistema_so;}
+.field-acciones{grid-area: acciones;}
+.field-motivo{grid-area: motivo;}
+.field-msg{grid-area: msg;}
+
+.acciones-form{
+display:flex;
+justify-content: stretch;
+width: 100%;
+align-self: end;
+}
+
+/* Botón Agregar: mismo alto y ancho de columna que Año de compra */
+.acciones-form button[type="submit"]{
+width: 100%;
+padding: 0 12px;
+min-width: 0;
+margin: 0;
+min-height: var(--campo-alto);
+height: var(--campo-alto);
+box-sizing: border-box;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+}
+
+@media (max-width: 980px){
+  #equipoForm{
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "tipo modelo"
+      "usuario licencias"
+      "anio_compra sistema_so"
+      "marca departamento"
+      "estado acciones"
+      "motivo motivo"
+      "msg msg";
+  }
+}
+
+@media (max-width: 560px){
+  #equipoForm{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "tipo"
+      "modelo"
+      "usuario"
+      "licencias"
+      "anio_compra"
+      "marca"
+      "departamento"
+      "estado"
+      "sistema_so"
+      "acciones"
+      "motivo"
+      "msg";
+  }
+}
+
+/* CARD */
+.card{
+background: white;
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+transition: transform 0.2s;
+}
+
+
+
+/* Etiquetas Agregar usuario / Agregar equipo */
+.grid-usuarios-alta label:not(.invisible-label),
+#equipoForm label{
+display: block;
+font-size: 14px;
+font-weight: 600;
+color: #333;
+margin-bottom: 0;
+}
+
+/* INPUTS — mismo tamaño en formulario principal, toolbar, admin y diálogos */
+
+#equipoForm input:not([type="hidden"]),
+#equipoForm select,
+.toolbar-filtros select,
+.toolbar-filtros input[type="text"],
+.toolbar-filtros input[type="search"],
+.grid-usuarios-alta input,
+.grid-usuarios-alta select,
+.dialog-usuario-inner input,
+.dialog-usuario-inner select{
+width: 100%;
+box-sizing: border-box;
+min-height: var(--campo-alto);
+height: var(--campo-alto);
+padding: var(--campo-padding);
+margin: 0;
+border-radius: var(--campo-radio);
+border: var(--campo-borde);
+transition: border-color 0.2s, box-shadow 0.2s;
+font-family: inherit;
+font-size: var(--campo-font);
+line-height: 1.2;
+}
+
+#equipoForm select:disabled{
+opacity: 0.75;
+cursor: not-allowed;
+background: #f5f5f5;
+color: #666;
+}
+
+#equipoForm input:focus,
+#equipoForm select:focus,
+.toolbar-filtros select:focus,
+.toolbar-filtros input[type="text"]:focus,
+.toolbar-filtros input[type="search"]:focus,
+.grid-usuarios-alta input:focus,
+.grid-usuarios-alta select:focus,
+.dialog-usuario-inner input:focus,
+.dialog-usuario-inner select:focus{
+border-color: #0B47BF;
+outline: none;
+box-shadow: 0 0 0 2px rgba(11, 71, 191, 0.2);
+}
+
+input:focus, select:focus, textarea:focus{
+border-color: #0B47BF;
+outline: none;
+box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+
+/* BOTONES */
+button{
+background: #9DBF21;
+color: white;
+border: none;
+padding: 10px 15px;
+border-radius: 6px;
+cursor: pointer;
+}
+
+button:hover,
+button:active{
+background: #9DBF21;
+}
+
+.wrap-comentario-inactivo{
+margin-top: 4px;
+margin-bottom: 8px;
+}
+
+.wrap-comentario-inactivo label{
+display: block;
+font-size: 14px;
+font-weight: 600;
+color: #333;
+margin-bottom: 6px;
+}
+
+.wrap-comentario-inactivo textarea{
+width: 100%;
+padding: 10px;
+margin-bottom: 0;
+border-radius: 6px;
+border: 1px solid #ccc;
+font-family: 'Segoe UI', sans-serif;
+font-size: 14px;
+resize: vertical;
+min-height: 72px;
+box-sizing: border-box;
+}
+
+.msg-equipo-form{
+min-height: 20px;
+margin: 0 0 10px;
+font-size: 14px;
+color: #c0392b;
+}
+
+/* BOTONES SECUNDARIOS */
+.btn-secondary{
+background: #6c757d;
+}
+
+.btn-secondary:hover{
+background: #5a6268;
+}
+
+/* TABLA */
+table{
+width: 100%;
+border-collapse: collapse;
+margin-top: 15px;
+}
+
+th{
+background: #0B47BF;
+color: white;
+}
+
+th, td{
+padding: 12px;
+text-align: left;
+border-bottom: 1px solid #ddd;
+}
+
+tr{
+transition: 0.2s;
+}
+
+tr:hover{
+background: #f1f1f1;
+}
+
+/* BUSCADOR Y FILTROS */
+.toolbar-filtros{
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 10px 14px;
+margin-bottom: 12px;
+}
+
+.toolbar-busqueda-fila{
+flex: 1 1 100%;
+order: 10;
+display: flex;
+justify-content: flex-start;
+padding-top: 4px;
+}
+
+.toolbar-filtros .toolbar-buscar{
+width: 100%;
+max-width: min(100%, 440px);
+min-width: 0;
+margin: 0;
+border-radius: 8px;
+background: #fff;
+border: 1px solid #c9d1e0;
+box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toolbar-filtros .toolbar-buscar::placeholder{
+color: #7d8799;
+opacity: 1;
+}
+
+.toolbar-filtros .toolbar-buscar:hover{
+border-color: #a8b4cc;
+}
+
+.toolbar-filtros .toolbar-buscar:focus{
+border-color: #0B47BF;
+outline: none;
+box-shadow: 0 0 0 2px rgba(11, 71, 191, 0.22);
+}
+
+.toolbar-actions{
+margin-left: auto;
+display: flex;
+gap: 10px;
+align-items: stretch;
+}
+
+.filtro-estado-label{
+font-size: 14px;
+font-weight: 600;
+color: #333;
+}
+
+#filtroEstado{
+width: auto;
+min-width: 160px;
+max-width: 100%;
+margin-bottom: 0;
+}
+
+#buscar{
+margin-bottom: 0;
+}
+
+.toolbar-actions button{
+min-height: var(--campo-alto);
+height: var(--campo-alto);
+padding: 0 16px;
+box-sizing: border-box;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+}
+
+/* ANIMACIÓN SUAVE */
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(10px)}
+to{opacity:1; transform:translateY(0)}
+}
+
+/* Superadmin: gestión de usuarios */
+.card-superadmin{
+border: 1px solid #c5d4f0;
+}
+.hint-superadmin{
+color:#555;
+font-size:14px;
+margin:0 0 16px;
+}
+.h4-admin{
+margin:18px 0 10px;
+font-size:16px;
+color:#0B47BF;
+}
+.grid-usuarios-alta{
+display:grid;
+grid-template-columns: repeat(5, 1fr);
+gap:12px 16px;
+align-items:end;
+margin-bottom:8px;
+}
+@media (max-width: 900px){
+  .grid-usuarios-alta{
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .grid-usuarios-alta .field-accion-usuario{
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 520px){
+  .grid-usuarios-alta{
+    grid-template-columns: 1fr;
+  }
+}
+.field-accion-usuario label.invisible-label{
+visibility:hidden;
+}
+.btn-aceptar-usuario{
+background:#9DBF21;
+color:#fff;
+border:none;
+padding: var(--campo-padding);
+border-radius: var(--campo-radio);
+cursor:pointer;
+font-size: var(--campo-font);
+font-family:inherit;
+width:100%;
+min-height: var(--campo-alto);
+height: var(--campo-alto);
+box-sizing: border-box;
+}
+.msg-usuario{
+min-height:20px;
+font-size:14px;
+margin:8px 0 0;
+color:#c0392b;
+}
+.tabla-usuarios{
+width:100%;
+border-collapse:collapse;
+margin-top:8px;
+font-size:14px;
+}
+.tabla-usuarios th{
+background:#0B47BF;
+color:#fff;
+padding:10px;
+text-align:left;
+}
+.tabla-usuarios td{
+padding:10px;
+border-bottom:1px solid #e5e7eb;
+}
+.badge-activo{
+background:#d4edda;
+color:#155724;
+padding:2px 8px;
+border-radius:999px;
+font-size:12px;
+}
+.badge-inactivo{
+background:#f8d7da;
+color:#721c24;
+padding:2px 8px;
+border-radius:999px;
+font-size:12px;
+}
+.badge-super{
+background:#e7f1ff;
+color:#0B47BF;
+padding:2px 8px;
+border-radius:999px;
+font-size:12px;
+}
+.btn-editar-usuario{
+background:#6c757d;
+color:#fff;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+font-size:13px;
+}
+dialog.dialog-usuario{
+border:none;
+border-radius:12px;
+padding:0;
+box-shadow:0 8px 32px rgba(0,0,0,0.2);
+max-width:440px;
+width:calc(100% - 32px);
+}
+dialog.dialog-usuario::backdrop{
+background:rgba(0,0,0,0.35);
+}
+.dialog-usuario-inner{
+padding:22px;
+}
+.dialog-usuario-inner h3{
+margin:0 0 16px;
+color:#0B47BF;
+}
+.dialog-usuario-inner .field-dlg{
+margin-bottom:14px;
+}
+.dialog-usuario-inner label{
+display:block;
+font-weight:600;
+font-size:14px;
+margin-bottom:4px;
+}
+.hint-dlg{
+font-size:12px;
+color:#666;
+margin:4px 0 0;
+}
+.dialog-actions{
+display:flex;
+gap:10px;
+justify-content:flex-end;
+margin-top:18px;
+}
+.dialog-actions button{
+min-height: var(--campo-alto);
+height: var(--campo-alto);
+padding: 0 16px;
+border-radius: var(--campo-radio);
+border:none;
+cursor:pointer;
+font-size: var(--campo-font);
+box-sizing: border-box;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+}
+.dialog-actions .btn-guardar{
+background:#9DBF21;
+color:#fff;
+}
+.dialog-actions .btn-cancelar{
+background:#e9ecef;
+color:#333;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+<img src="logosinfondo.png" class="logo">
+
+<span class="titulo">Sistema Inventario TI</span>
+
+<div class="header-right">
+<span id="sessionUserLabel" class="header-user" aria-live="polite"></span>
+<button type="button" id="btnCerrarSesion" class="btn-logout">Cerrar sesión</button>
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="grid">
+
+<div class="card card-superadmin" id="cardAdminUsuarios" hidden>
+<h3>Agregar usuario</h3>
+<div class="admin-add-user">
+<form id="formNuevoUsuario" class="grid-usuarios-alta">
+<div class="field">
+<label for="nuevoUserNombre">Nombre</label>
+<input id="nuevoUserNombre" type="text" required autocomplete="off" maxlength="120">
+</div>
+<div class="field">
+<label for="nuevoUserPassword">Contraseña</label>
+<input id="nuevoUserPassword" type="password" required autocomplete="new-password" minlength="4" maxlength="200">
+</div>
+<div class="field">
+<label for="nuevoUserRol">Rol</label>
+<select id="nuevoUserRol" required aria-label="Rol del nuevo usuario">
+<option value="0" selected>Usuario</option>
+<option value="1">Superadmin</option>
+</select>
+</div>
+<div class="field field-accion-usuario">
+<label class="invisible-label" for="btnNuevoUsuarioDummy">&nbsp;</label>
+<button type="submit" id="btnNuevoUsuarioDummy" class="btn-aceptar-usuario">Aceptar</button>
+</div>
+</form>
+<p id="msgNuevoUsuario" class="msg-usuario" role="status" aria-live="polite"></p>
+</div>
+
+<div class="admin-lista-wrap">
+<div style="overflow-x:auto;">
+<table class="tabla-usuarios" id="tablaUsuarios" aria-label="Lista de usuarios">
+<thead>
+<tr>
+<th>Usuario</th>
+<th>Estado</th>
+<th>Rol</th>
+<th></th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="card">
+
+<h3>Agregar equipo</h3>
+
+<form id="equipoForm">
+
+<div class="field field-tipo">
+<label for="tipo">Tipo de equipo</label>
+<select id="tipo" aria-label="Tipo de equipo" required>
+<option value="" selected>Seleccione un tipo</option>
+<option value="Antena">Antena</option>
+<option value="Router">Router</option>
+<option value="Repetidores">Repetidores</option>
+<option value="Switch">Switch</option>
+<option value="Notebooks">Notebooks</option>
+<option value="Escritorio">Escritorio</option>
+<option value="Impresora">Impresora</option>
+</select>
+</div>
+
+<div class="field field-modelo">
+<label for="modelo">Modelo</label>
+<input id="modelo" placeholder="Modelo" required>
+</div>
+
+<div class="field field-usuario">
+<label for="usuario">Usuario</label>
+<input id="usuario" placeholder="Usuario" required>
+</div>
+
+<div class="field field-licencias">
+<label for="licencias">Licencias</label>
+<select id="licencias" aria-label="Licencias" required>
+<option value="No" selected>No</option>
+<option value="Licencia Office standard">Licencia Office standard</option>
+</select>
+</div>
+
+<div class="field field-anio-compra">
+<label for="anioCompra">Año de compra</label>
+<input id="anioCompra" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="AAAA" title="Año de 4 dígitos; no mayor al año en curso" required aria-label="Año de compra">
+</div>
+
+<div class="field field-marca">
+<label for="marca">Marca</label>
+<select id="marca" required aria-label="Marca del equipo" disabled>
+<option value="">Seleccionar</option>
+</select>
+</div>
+
+<div class="field field-departamento">
+<label for="departamento">Área</label>
+<select id="departamento" required aria-label="Área del equipo">
+<option value="" selected>Seleccionar</option>
+<option value="TI">TI</option>
+<option value="BOD">Bodega</option>
+<option value="FRI">Frigorifico</option>
+<option value="RH">RRHH</option>
+<option value="GER">Gerencia</option>
+<option value="ADM">Administracion</option>
+<option value="PAC">Packing</option>
+<option value="MAN">Mantencion</option>
+</select>
+</div>
+
+<div class="field field-estado">
+<label for="estado">Estado</label>
+<select id="estado" aria-label="Estado del equipo" required>
+<option>Activo</option>
+<option>Inactivo</option>
+</select>
+</div>
+
+<div class="field field-sistema-so" id="wrapSistemaOperativo">
+<label for="sistemaOperativo">Sistema operativo</label>
+<select id="sistemaOperativo" aria-label="Sistema operativo">
+<option value="" selected>Seleccionar</option>
+<option value="Windows 7">Windows 7</option>
+<option value="Windows 8">Windows 8</option>
+<option value="Windows 10">Windows 10</option>
+<option value="Windows 10 Pro">Windows 10 Pro</option>
+<option value="Windows 11 Home">Windows 11 Home</option>
+<option value="Windows 11 Pro">Windows 11 Pro</option>
+<option value="Linux">Linux</option>
+</select>
+</div>
+
+<div class="field field-acciones acciones-form">
+<button type="submit">Agregar</button>
+</div>
+
+<div id="wrapComentarioInactivo" class="field field-motivo wrap-comentario-inactivo" hidden>
+<label for="comentarioInactivo">Motivo al estar Inactivo</label>
+<textarea id="comentarioInactivo" rows="3" placeholder="Obligatorio si el estado es Inactivo" aria-required="false"></textarea>
+</div>
+
+<p id="msgEquipoForm" class="field field-msg msg-equipo-form" role="status" aria-live="polite"></p>
+
+</form>
+
+</div>
+
+<div class="card">
+
+<div class="toolbar-filtros">
+<label class="filtro-estado-label" for="filtroEstado">Estado</label>
+<select id="filtroEstado" title="Filtrar por estado">
+<option value="Todos" selected>Todos</option>
+<option value="Activo">Activo</option>
+<option value="Inactivo">Inactivo</option>
+</select>
+<div class="toolbar-actions">
+<button onclick="exportarExcel()">Exportar</button>
+<button onclick="irDashboard()">Dashboard</button>
+</div>
+<div class="toolbar-busqueda-fila" role="search">
+<input id="buscar" class="toolbar-buscar" type="search" placeholder="Buscar por marca, modelo, usuario o nombre del área…" aria-label="Buscar equipos" autocomplete="off">
+</div>
+</div>
+
+<table id="tablaEquipos">
+
+<thead>
+<tr>
+<th>Código</th>
+<th>Marca</th>
+<th>Modelo</th>
+<th>Tipo</th>
+<th>Área</th>
+<th>Usuario</th>
+<th>Estado</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<dialog id="dialogEditarUsuario" class="dialog-usuario">
+<div class="dialog-usuario-inner">
+<h3>Editar usuario</h3>
+<form id="formEditarUsuario">
+<input type="hidden" id="editUserId">
+<div class="field-dlg">
+<label for="editUserNombre">Nombre</label>
+<input id="editUserNombre" type="text" required maxlength="120" autocomplete="off">
+</div>
+<div class="field-dlg">
+<label for="editUserPassword">Nueva contraseña</label>
+<input id="editUserPassword" type="password" autocomplete="new-password" minlength="4" maxlength="200" placeholder="Dejar vacío para no cambiar">
+<p class="hint-dlg">Opcional. Mínimo 4 caracteres si la cambia.</p>
+</div>
+<div class="field-dlg">
+<label for="editUserRol">Rol</label>
+<select id="editUserRol" required aria-label="Rol del usuario">
+<option value="0">Usuario</option>
+<option value="1">Superadmin</option>
+</select>
+</div>
+<div class="field-dlg">
+<label for="editUserActivo">Estado de acceso</label>
+<select id="editUserActivo" required>
+<option value="1">Activo (puede iniciar sesión)</option>
+<option value="0">Desactivado (no puede iniciar sesión)</option>
+</select>
+</div>
+<div class="dialog-actions">
+<button type="button" class="btn-cancelar" id="btnCancelarEditUsuario">Cancelar</button>
+<button type="submit" class="btn-guardar">Guardar</button>
+</div>
+</form>
+<p id="msgEditarUsuario" class="msg-usuario"></p>
+</div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

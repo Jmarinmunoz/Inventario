@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iniciar sesión — Inventario TI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #eef0f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 380px;
+      padding: 40px 36px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .login-logo {
+      width: 200px;
+      height: auto;
+      margin-bottom: 16px;
+      object-fit: contain;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    form {
+      width: 100%;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .field-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 15px;
+      color: #111827;
+      background: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder { color: #9ca3af; }
+    input:focus {
+      border-color: #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+      background: #fff;
+    }
+    .input-password {
+      padding-right: 44px;
+    }
+    .btn-toggle-pass {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+    }
+    .btn-toggle-pass:hover { color: #2563eb; }
+    .btn-toggle-pass svg { width: 20px; height: 20px; }
+    button[type="submit"] {
+      width: 100%;
+      padding: 13px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-top: 6px;
+    }
+    button[type="submit"]:hover {
+      background: #1d4ed8;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.30);
+    }
+    #msg {
+      min-height: 20px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #dc2626;
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <img src="logosinfondo.png" alt="Logo" class="login-logo" decoding="async">
+    <form id="loginForm" autocomplete="on">
+      <label for="nombre">Usuario</label>
+      <div class="field-wrap">
+        <input id="nombre" name="nombre" type="text" required autocomplete="username"
+               autofocus placeholder="usuario">
+      </div>
+
+      <label for="password">Contraseña</label>
+      <div class="field-wrap">
+        <input id="password" name="password" type="password" required
+               autocomplete="current-password" placeholder="usuario" class="input-password">
+        <button type="button" class="btn-toggle-pass" id="btnTogglePass" aria-label="Mostrar contraseña">
+          <svg id="iconEye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <svg id="iconEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+        </button>
+      </div>
+
+      <button type="submit">Iniciar sesión</button>
+    </form>
+    <p id="msg" role="alert"></p>
+  </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById("loginForm")
+      var msg = document.getElementById("msg")
+      var passInput = document.getElementById("password")
+      var btnToggle = document.getElementById("btnTogglePass")
+      var iconEye = document.getElementById("iconEye")
+      var iconEyeOff = document.getElementById("iconEyeOff")
+
+      btnToggle.addEventListener("click", function () {
+        var visible = passInput.type === "text"
+        passInput.type = visible ? "password" : "text"
+        iconEye.hidden = !visible
+        iconEyeOff.hidden = visible
+        btnToggle.setAttribute("aria-label", visible ? "Mostrar contraseña" : "Ocultar contraseña")
+      })
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault()
+        msg.textContent = ""
+        var nombre = document.getElementById("nombre").value.trim()
+        var password = passInput.value
+        fetch("/login", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ nombre: nombre, password: password })
+        })
+          .then(function (res) {
+            return res.json().then(function (data) { return { res: res, data: data } })
+          })
+          .then(function (r) {
+            if (!r.res.ok) {
+              msg.textContent = (r.data && r.data.error) || "No se pudo iniciar sesión."
+              return
+            }
+            window.location.href = "/"
+          })
+          .catch(function () {
+            msg.textContent = "Error de conexión. Intente de nuevo."
+          })
+      })
+    })()
+  </script>
+</body>
+
+</html>
