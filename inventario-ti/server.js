@@ -1,7 +1,7 @@
 const express = require("express")
 const path = require("path")
 const cors = require("cors")
-const session = require("express-session")
+const cookieSession = require("cookie-session")
 const ExcelJS = require("exceljs")
 
 // ============================
@@ -298,12 +298,12 @@ const SESSION_SECRET = process.env.SESSION_SECRET || "inventario-ti-demo-secret-
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({ origin: true, credentials: true }))
-app.use(session({
-  secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
+app.use(cookieSession({
   name: "inventario.sid",
-  cookie: { httpOnly: true, sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 }
+  secret: SESSION_SECRET,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  httpOnly: true,
+  sameSite: "lax"
 }))
 
 // ============================
