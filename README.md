@@ -4,7 +4,7 @@ Sistema web de gestión de inventario tecnológico desarrollado con Node.js y Ex
 
 ## Demo en vivo
 
-🔗 [Ver demo](https://inventario.vercel.app)
+🔗 [Ver demo](https://jmm-inventario.vercel.app/login)
 
 > Los datos del demo son ficticios y se reinician automáticamente. Los cambios no persisten entre sesiones.
 
